@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Humand Content AI</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+:root {
+  --bg:#0f0f13;--bg2:#17171f;--bg3:#1e1e2a;--bg4:#252535;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --accent:#6c5ce7;--accent2:#a29bfe;--accent3:#fd79a8;
+  --text:#f0eeff;--text2:#a09cbf;--text3:#6b6890;
+  --green:#00b894;--amber:#fdcb6e;--red:#e17055;
+  --r:12px;--font:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--border);background:var(--bg2);z-index:50;flex-shrink:0;position:sticky;top:0;}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent3));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.logo-text{font-weight:700;font-size:16px;letter-spacing:-.3px}
+.logo-sub{font-size:10px;color:var(--text3)}
+.badge{background:rgba(108,92,231,.18);color:var(--accent2);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid rgba(108,92,231,.3)}
+.main{display:flex;flex:1;min-height:0;align-items:flex-start;}
+.sidebar{width:300px;min-width:300px;background:var(--bg2);border-right:1px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:14px;position:sticky;top:57px;max-height:calc(100vh - 57px);overflow-y:auto;}
+.content{flex:1;min-width:0;padding:20px;display:flex;flex-direction:column;gap:16px;overflow-x:hidden;}
+.slabel{font-size:10px;text-transform:uppercase;letter-spacing:1.1px;color:var(--text3);font-weight:600;margin-bottom:8px}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
+label{font-size:12px;color:var(--text2);display:block;margin-bottom:4px}
+input[type=text],input[type=number],select,textarea{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:12px;padding:8px 11px;outline:none;font-family:var(--font);transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:55px;line-height:1.5}
+select option{background:var(--bg3)}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{background:var(--bg);border:1px solid var(--border2);color:var(--text2);padding:5px 10px;border-radius:20px;font-size:11px;cursor:pointer;transition:all .15s;user-select:none}
+.chip.active{background:rgba(108,92,231,.2);border-color:var(--accent);color:var(--accent2)}
+.btn{background:linear-gradient(135deg,var(--accent),#5a4fcf);color:#fff;border:none;border-radius:10px;padding:11px 16px;font-size:13px;font-weight:600;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .2s,transform .1s;font-family:var(--font)}
+.btn:hover{opacity:.9;transform:translateY(-1px)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-sm{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;font-family:var(--font);white-space:nowrap}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent2)}
+.btn-acc{background:rgba(108,92,231,.2);border:1px solid rgba(108,92,231,.4);color:var(--accent2);padding:6px 12px;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;font-family:var(--font)}
+.btn-acc:hover{background:rgba(108,92,231,.35)}
+.btn-green{background:rgba(0,184,148,.15);border:1px solid rgba(0,184,148,.4);color:var(--green);padding:6px 12px;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;font-family:var(--font)}
+.btn-green:hover{background:rgba(0,184,148,.25)}
+.brand-preview{background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:9px}
+.brand-colors{display:flex;gap:6px;flex-wrap:wrap}
+.swatch{width:26px;height:26px;border-radius:6px;border:1px solid rgba(255,255,255,.1);cursor:pointer}
+.brand-status{font-size:11px;padding:6px 10px;border-radius:7px;display:flex;align-items:center;gap:6px}
+.brand-status.ok{background:rgba(0,184,148,.12);color:var(--green);border:1px solid rgba(0,184,148,.25)}
+.brand-status.err{background:rgba(225,112,85,.12);color:var(--red);border:1px solid rgba(225,112,85,.25)}
+.brand-status.loading{background:rgba(108,92,231,.12);color:var(--accent2);border:1px solid rgba(108,92,231,.25)}
+.month-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r)}
+.month-title{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.month-meta{font-size:11px;color:var(--text3)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dh{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);text-align:center;padding:4px 0}
+.cal-day{background:var(--bg3);border:1px solid var(--border);border-radius:9px;min-height:80px;padding:7px;cursor:pointer;transition:border-color .15s,transform .1s;position:relative}
+.cal-day:hover{border-color:var(--border2);transform:translateY(-1px)}
+.cal-day.empty{background:transparent;border:none;cursor:default}.cal-day.empty:hover{transform:none}
+.cal-day.has-post{border-color:rgba(108,92,231,.35)}.cal-day.has-post:hover{border-color:var(--accent)}
+.cal-day.has-img{border-color:rgba(0,184,148,.4)}.cal-day.has-img:hover{border-color:var(--green)}
+.day-num{font-size:10px;color:var(--text3);margin-bottom:4px;font-weight:500}
+.day-tag{display:inline-block;padding:1px 5px;border-radius:4px;font-size:9px;font-weight:600;margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px}
+.day-tag.comunicado{background:rgba(0,184,148,.18);color:var(--green)}
+.day-tag.reconocimiento{background:rgba(253,203,110,.18);color:var(--amber)}
+.day-tag.bienestar{background:rgba(253,121,168,.18);color:var(--accent3)}
+.day-tag.cultura{background:rgba(116,185,255,.18);color:#74b9ff}
+.day-tag.capacitacion{background:rgba(162,155,254,.18);color:var(--accent2)}
+.day-tag.noticias{background:rgba(225,112,85,.18);color:var(--red)}
+.day-content{font-size:9.5px;color:var(--text2);line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.day-img-badge{position:absolute;bottom:5px;right:5px;background:var(--green);color:#fff;border-radius:4px;font-size:8px;padding:2px 5px;font-weight:600}
+.posts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:10px}
+.post-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .15s}
+.post-card:hover{border-color:var(--border2)}
+.pch{padding:10px 13px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;border-bottom:1px solid var(--border)}
+.pcb{padding:11px 13px}
+.pcf{padding:9px 13px;border-top:1px solid var(--border);display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.post-title{font-size:12px;font-weight:600;margin-bottom:5px;line-height:1.4}
+.post-copy{font-size:11px;color:var(--text2);line-height:1.55;border-left:2px solid var(--accent);padding-left:9px;margin:8px 0;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.post-date{font-size:10px;color:var(--text3)}
+.img-placeholder{width:100%;height:90px;border-radius:6px;border:1px dashed var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3);margin-top:8px;cursor:pointer;transition:border-color .15s}
+.img-placeholder:hover{border-color:var(--green);color:var(--green)}
+.img-thumbs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:8px}
+.img-thumb-wrap{border-radius:5px;overflow:hidden;border:1px solid var(--border);text-align:center}
+.img-thumb-label{font-size:8px;color:var(--text3);padding:2px 0}
+.sug-bar{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;gap:10px}
+.sug-icon{font-size:18px;flex-shrink:0}
+.sug-title{font-size:12px;font-weight:600;margin-bottom:3px}
+.sug-text{font-size:11px;color:var(--text2);line-height:1.6}
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;opacity:.7}
+.empty-icon{font-size:44px}
+.empty-state h2{font-size:19px;font-weight:600}
+.empty-state p{font-size:13px;color:var(--text2);max-width:320px;line-height:1.6}
+.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;flex:1;min-height:300px}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+.spinner-sm{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{color:var(--text2);font-size:13px}.loader-sub{color:var(--text3);font-size:11px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:1}
+.modal-title{font-size:14px;font-weight:700}
+.modal-close{background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.copy-opt{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px}
+.copy-opt-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:600;margin-bottom:7px}
+.copy-text{font-size:12px;color:var(--text2);line-height:1.6;white-space:pre-wrap}
+.copy-actions{display:flex;gap:7px;margin-top:9px;justify-content:flex-end}
+.style-toggle{display:flex;gap:6px;margin-bottom:2px}
+.style-btn{flex:1;padding:9px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;font-family:var(--font);text-align:center}
+.style-btn.active{background:rgba(108,92,231,.2);border-color:var(--accent);color:var(--accent2)}
+.img-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.img-format-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center}
+.img-format-card.done{border-color:rgba(0,184,148,.4)}
+.img-format-card.busy{border-color:rgba(253,203,110,.3);opacity:.75}
+.img-format-label{font-size:10px;color:var(--text2);font-weight:500;margin-top:6px}
+.img-preview-box{border-radius:6px;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center}
+
+.export-option{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:7px;border:none;background:transparent;color:var(--text);cursor:pointer;transition:background .15s;text-align:left;font-family:var(--font)}
+.export-option:hover{background:var(--bg3)}
+.toast{position:fixed;bottom:20px;right:20px;z-index:200;background:var(--bg2);border:1px solid var(--border2);color:var(--text);padding:10px 16px;border-radius:9px;font-size:12px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.35);animation:slideIn .25s ease;display:flex;align-items:center;gap:7px}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@4.0.1/libs/pptxgen.bundle.js"></script>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-icon">🚀</div>
+    <div><div class="logo-text">Humand Content AI</div><div class="logo-sub">Calendario · Copy · Imágenes</div></div>
+  </div>
+  <span class="badge">✨ Powered by Claude</span>
+</header>
+
+<div class="main">
+<div class="sidebar">
+
+  <div>
+    <div class="slabel">🎨 Identidad de marca</div>
+    <div class="card">
+      <div>
+        <label>Sitio web de la empresa</label>
+        <div style="display:flex;gap:6px">
+          <input type="text" id="website" placeholder="Ej. humand.co" style="flex:1"/>
+          <button class="btn-green" onclick="extractBrand()" id="extractBtn" style="white-space:nowrap;padding:6px 12px">Analizar</button>
+        </div>
+      </div>
+      <div id="brandStatus"></div>
+      <div id="brandPreview" style="display:none" class="brand-preview">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:600">Colores de marca</div>
+        <div class="brand-colors" id="brandColors"></div>
+        <div class="row">
+          <div>
+            <label>Primario</label>
+            <div style="display:flex;gap:5px;align-items:center">
+              <input type="color" id="color1" style="width:32px;height:28px;padding:2px;border-radius:5px;cursor:pointer;border:1px solid var(--border2);background:transparent"/>
+              <input type="text" id="color1Hex" placeholder="#6c5ce7" style="flex:1;font-size:11px"/>
+            </div>
+          </div>
+          <div>
+            <label>Secundario</label>
+            <div style="display:flex;gap:5px;align-items:center">
+              <input type="color" id="color2" style="width:32px;height:28px;padding:2px;border-radius:5px;cursor:pointer;border:1px solid var(--border2);background:transparent"/>
+              <input type="text" id="color2Hex" placeholder="#a29bfe" style="flex:1;font-size:11px"/>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label>Texto sobre fondo de color</label>
+          <div style="display:flex;gap:5px;align-items:center">
+            <input type="color" id="color3" style="width:32px;height:28px;padding:2px;border-radius:5px;cursor:pointer;border:1px solid var(--border2);background:transparent"/>
+            <input type="text" id="color3Hex" placeholder="#ffffff" style="flex:1;font-size:11px"/>
+          </div>
+        </div>
+        <div>
+          <label>Tipografía detectada</label>
+          <input type="text" id="brandFont" placeholder="Inter, Poppins, Montserrat..."/>
+        </div>
+        <div>
+          <label>Descripción del estilo visual</label>
+          <textarea id="brandStyle" placeholder="Ej. Moderno y minimalista, gradientes suaves, iconografía plana..."></textarea>
+        </div>
+      </div>
+      <div>
+        <label>O describe el estilo manualmente</label>
+        <textarea id="manualDesc" placeholder="Ej. Colores azul #003087 y dorado #FFB800, tipografía moderna, estilo corporativo..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="slabel">Empresa</div>
+    <div class="card">
+      <div><label>Nombre</label><input type="text" id="company" placeholder="Ej. TechCorp México"/></div>
+      <div><label>Industria</label><input type="text" id="industry" placeholder="Ej. Tecnología, Retail, Salud..."/></div>
+      <div>
+        <label>Tono (elige varios)</label>
+        <div class="chips" id="toneChips">
+          <div class="chip active" data-val="cercano y motivador">Cercano</div>
+          <div class="chip" data-val="formal y profesional">Formal</div>
+          <div class="chip" data-val="divertido y dinámico">Divertido</div>
+          <div class="chip" data-val="inspirador y aspiracional">Inspirador</div>
+          <div class="chip" data-val="empático y humano">Empático</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="slabel">Mes</div>
+    <div class="card">
+      <div class="row">
+        <div><label>Mes</label>
+          <select id="month">
+            <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+            <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
+            <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+            <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+          </select>
+        </div>
+        <div><label>Año</label><input type="number" id="year" value="2025" min="2024" max="2030"/></div>
+      </div>
+      <div><label>Publicaciones por semana</label>
+        <div class="chips" id="freqChips">
+          <div class="chip" data-val="2">2/sem</div>
+          <div class="chip active" data-val="3">3/sem</div>
+          <div class="chip" data-val="5">5/sem</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="slabel">Categorías</div>
+    <div class="card">
+      <div class="chips" id="catChips">
+        <div class="chip active" data-val="Comunicado">📢 Comunicado</div>
+        <div class="chip active" data-val="Reconocimiento">🏆 Reconocimiento</div>
+        <div class="chip active" data-val="Bienestar">💚 Bienestar</div>
+        <div class="chip active" data-val="Cultura">🎯 Cultura</div>
+        <div class="chip" data-val="Capacitación">📚 Capacitación</div>
+        <div class="chip" data-val="Noticias">📰 Noticias</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="slabel">Contexto adicional</div>
+    <div class="card">
+      <div><label>Eventos / fechas especiales</label><textarea id="events" placeholder="Ej. Semana salud mental, aniversario empresa..."></textarea></div>
+      <div><label>Valores de la empresa</label><textarea id="values" placeholder="Ej. Innovación, Trabajo en equipo..."></textarea></div>
+    </div>
+  </div>
+
+  <button class="btn" id="generateBtn" onclick="generateCalendar()"><span>✨</span> Generar calendario completo</button>
+</div>
+
+<div class="content" id="mainContent">
+  <div class="empty-state">
+    <div class="empty-icon">🗓️</div>
+    <h2>Tu calendario inteligente</h2>
+    <p>Ingresa el sitio web de tu empresa para extraer automáticamente colores y estilo, luego genera el calendario completo con copy e imágenes para el Muro de Humand.</p>
+  </div>
+</div>
+</div>
+
+<!-- COPY MODAL -->
+<div id="modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- IMAGE MODAL -->
+<div id="imgModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeImgModal()">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <div class="modal-title" id="imgModalTitle"></div>
+      <button class="modal-close" onclick="closeImgModal()">×</button>
+    </div>
+    <div class="modal-body" id="imgModalBody"></div>
+  </div>
+</div>
+
+<script>
+const MONTHS=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+let calendarData=null, brandData=null;
+let selectedTone='cercano y motivador', selectedFreq='3';
+let selectedCats=['Comunicado','Reconocimiento','Bienestar','Cultura'];
+let generatedImages={};   // day -> {square:svg, vertical:svg, banner:svg}
+let imgStyles={};         // day -> 'realistic'|'illustration'
+let currentImgDay=null;
+
+const n=new Date();
+document.getElementById('month').value=n.getMonth()+1;
+document.getElementById('year').value=n.getFullYear();
+
+// ---- CHIPS ----
+function initChips(id,single,cb){
+  document.getElementById(id).querySelectorAll('.chip').forEach(c=>{
+    c.addEventListener('click',()=>{
+      if(single){document.getElementById(id).querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));}
+      c.classList.toggle('active');
+      if(single&&!c.classList.contains('active'))c.classList.add('active');
+      cb();
+    });
+  });
+}
+initChips('toneChips',false,()=>{
+  const a=[...document.querySelectorAll('#toneChips .chip.active')];
+  selectedTone=a.length?a.map(c=>c.dataset.val).join(', '):'cercano y motivador';
+});
+initChips('freqChips',true,()=>{
+  const a=document.querySelector('#freqChips .chip.active');
+  selectedFreq=a?a.dataset.val:'3';
+});
+initChips('catChips',false,()=>{
+  selectedCats=[...document.querySelectorAll('#catChips .chip.active')].map(c=>c.dataset.val);
+});
+
+// ---- COLOR SYNC ----
+['1','2','3'].forEach(n=>{
+  const picker=document.getElementById('color'+n);
+  const hex=document.getElementById('color'+n+'Hex');
+  picker.addEventListener('input',e=>{hex.value=e.target.value;if(brandData)brandData['color'+n]=e.target.value;});
+  hex.addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value)){picker.value=e.target.value;if(brandData)brandData['color'+n]=e.target.value;}});
+});
+function setColor(n,hex){
+  document.getElementById('color'+n).value=hex;
+  document.getElementById('color'+n+'Hex').value=hex;
+  if(brandData)brandData['color'+n]=hex;
+}
+
+// ---- BRAND EXTRACTION ----
+async function extractBrand(){
+  const site=document.getElementById('website').value.trim();
+  if(!site){showToast('⚠️ Ingresa el sitio web');return;}
+  const url=site.startsWith('http')?site:'https://'+site;
+  const btn=document.getElementById('extractBtn');
+  btn.textContent='...';btn.disabled=true;
+  document.getElementById('brandStatus').innerHTML=`<div class="brand-status loading"><div class="spinner" style="width:12px;height:12px;border-width:2px"></div> Analizando...</div>`;
+
+  const prompt=`Busca y analiza el sitio web "${url}" para extraer su identidad visual de marca.
+Responde SOLO con JSON sin markdown:
+{"company_name":"nombre","color1":"#hex primario","color2":"#hex secundario","color3":"#hex texto o acento claro","font":"tipografía principal o más similar en Google Fonts","style_description":"2 oraciones sobre el estilo visual","industry_guess":"sector","brand_personality":"3 adjetivos"}
+Si no puedes acceder, infiere colores típicos de ese sector/dominio.`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    const text=data.content?.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    const m=text.match(/\{[\s\S]*\}/);
+    if(!m)throw new Error('no JSON');
+    brandData=JSON.parse(m[0]);
+    document.getElementById('brandStatus').innerHTML=`<div class="brand-status ok">✅ Marca analizada correctamente</div>`;
+    document.getElementById('brandPreview').style.display='flex';
+    document.getElementById('brandPreview').style.flexDirection='column';
+    document.getElementById('brandPreview').style.gap='9px';
+    setColor('1',brandData.color1||'#6c5ce7');
+    setColor('2',brandData.color2||'#a29bfe');
+    setColor('3',brandData.color3||'#ffffff');
+    document.getElementById('brandFont').value=brandData.font||'Inter';
+    document.getElementById('brandStyle').value=brandData.style_description||'';
+    const cols=[brandData.color1,brandData.color2,brandData.color3].filter(Boolean);
+    document.getElementById('brandColors').innerHTML=cols.map(c=>`<div class="swatch" style="background:${c}" title="${c}" onclick="navigator.clipboard.writeText('${c}')"></div>`).join('');
+    if(brandData.company_name&&!document.getElementById('company').value)document.getElementById('company').value=brandData.company_name;
+    if(brandData.industry_guess&&!document.getElementById('industry').value)document.getElementById('industry').value=brandData.industry_guess;
+    showToast('✅ Marca extraída: '+(brandData.company_name||site));
+  }catch(e){
+    document.getElementById('brandStatus').innerHTML=`<div class="brand-status err">⚠️ No se pudo analizar. Configura los colores manualmente.</div>`;
+    document.getElementById('brandPreview').style.display='flex';
+    document.getElementById('brandPreview').style.flexDirection='column';
+    document.getElementById('brandPreview').style.gap='9px';
+  }
+  btn.textContent='Analizar';btn.disabled=false;
+}
+
+// ---- GENERATE CALENDAR ----
+async function generateCalendar(){
+  if(!selectedCats.length){showToast('⚠️ Selecciona al menos una categoría');return;}
+  const company=document.getElementById('company').value||'la empresa';
+  const industry=document.getElementById('industry').value||'general';
+  const month=parseInt(document.getElementById('month').value);
+  const year=parseInt(document.getElementById('year').value);
+  const events=document.getElementById('events').value;
+  const values=document.getElementById('values').value;
+  const manual=document.getElementById('manualDesc').value;
+  const daysInMonth=new Date(year,month,0).getDate();
+  const total=Math.round(parseInt(selectedFreq)*4.3);
+  const brandCtx=brandData
+    ?`Color primario ${brandData.color1}, secundario ${brandData.color2}, tipografía ${brandData.font||'sans-serif'}. Estilo: ${brandData.style_description||''}. Personalidad: ${brandData.brand_personality||''}.`
+    :manual?`Descripción de marca: ${manual}`:'Sin datos de marca específicos.';
+
+  const btn=document.getElementById('generateBtn');
+  btn.disabled=true;btn.innerHTML=`<div class="spinner-sm"></div> Generando...`;
+  document.getElementById('mainContent').innerHTML=`<div class="loader"><div class="spinner"></div><div class="loader-text">Creando tu calendario...</div><div class="loader-sub">La IA está planificando ${MONTHS[month]}</div></div>`;
+
+  const prompt=`Eres experto en comunicación interna y employer branding para Humand.co.
+Genera calendario de contenidos: ${MONTHS[month]} ${year} para "${company}" (${industry}).
+Marca: ${brandCtx}
+Tono: ${selectedTone}. Frecuencia: ${selectedFreq}/semana. Categorías: ${selectedCats.join(', ')}.
+Eventos: ${events||'ninguno'}. Valores: ${values||'generales'}.
+El mes tiene ${daysInMonth} días. Genera exactamente ${total} publicaciones en días laborables (lunes-viernes).
+Responde SOLO con JSON válido sin markdown:
+{"month":"${MONTHS[month]} ${year}","suggestions":"2-3 oraciones estratégicas para este mes","posts":[{"day":N,"weekday":"Lunes|Martes|Miércoles|Jueves|Viernes","category":"${selectedCats[0]}","title":"Título max 55 chars","copy_main":"Copy principal con emojis 80-140 palabras + CTA","copy_short":"Versión corta max 35 palabras con emoji","copy_formal":"Versión formal sin emojis max 80 palabras","hashtags":["#tag1","#tag2","#tag3"],"best_time":"9:00 AM","image_concept":"Descripción visual detallada: composición, elementos, mood, qué mostrar"}]}`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    let text=data.content?.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    const m=text.match(/\{[\s\S]*\}/);
+    if(!m)throw new Error('JSON inválido');
+    const parsed=JSON.parse(m[0]);
+    calendarData={...parsed,month,year,company};
+    generatedImages={};imgStyles={};
+    renderCalendar();
+  }catch(e){
+    document.getElementById('mainContent').innerHTML=`<div class="loader"><div style="font-size:32px">⚠️</div><div class="loader-text">Error al generar</div><div class="loader-sub">${e.message}</div></div>`;
+  }
+  btn.disabled=false;btn.innerHTML='<span>✨</span> Generar calendario completo';
+}
+
+// ---- RENDER ----
+function tagClass(cat){return cat.toLowerCase().replace(/ó/g,'o').replace(/ú/g,'u').replace(/é/g,'e').replace(/\s/g,'-');}
+
+function renderCalendar(){
+  const data=calendarData;
+  const content=document.getElementById('mainContent');
+  const daysInMonth=new Date(data.year,data.month,0).getDate();
+  const firstDow=new Date(data.year,data.month-1,1).getDay();
+  const startCol=firstDow===0?6:firstDow-1;
+  const byDay={};data.posts.forEach(p=>{byDay[p.day]=p;});
+
+  // Calendar
+  let cal=`<div class="cal-grid">${['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(d=>`<div class="cal-dh">${d}</div>`).join('')}`;
+  for(let i=0;i<startCol;i++)cal+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const p=byDay[d],hasImg=!!(generatedImages[d]&&Object.keys(generatedImages[d]).length);
+    const wknd=new Date(data.year,data.month-1,d).getDay();
+    cal+=`<div class="cal-day${p?' has-post':''}${hasImg?' has-img':''}" ${p?`onclick="openModal(${d})"`:''}>`
+      +`<div class="day-num">${d}</div>`
+      +(p?`<div class="day-tag ${tagClass(p.category)}">${p.category}</div><div class="day-content">${p.title}</div>${hasImg?'<div class="day-img-badge">IMG</div>':''}`
+        :(wknd===0||wknd===6?'<div style="opacity:.2;font-size:9px">Fin de sem.</div>':''))
+      +'</div>';
+  }
+  const rem=(startCol+daysInMonth)%7;
+  if(rem)for(let i=0;i<7-rem;i++)cal+=`<div class="cal-day empty"></div>`;
+  cal+='</div>';
+
+  // Post cards
+  const cards=data.posts.map(p=>{
+    const imgs=generatedImages[p.day]||{};
+    const hasSome=Object.keys(imgs).length>0;
+    const fmts=[{k:'square',l:'1:1'},{k:'vertical',l:'4:5'},{k:'banner',l:'16:9'}];
+    return `<div class="post-card">
+      <div class="pch">
+        <div style="display:flex;align-items:center;gap:7px">
+          <div class="day-tag ${tagClass(p.category)}">${p.category}</div>
+          <div class="post-date">${p.weekday} ${p.day} · ${p.best_time}</div>
+        </div>
+        <div style="font-size:9px;color:var(--text3)">${p.hashtags.slice(0,2).join(' ')}</div>
+      </div>
+      <div class="pcb">
+        <div class="post-title">${p.title}</div>
+        <div class="post-copy">${p.copy_main}</div>
+        ${hasSome?`<div class="img-thumbs">${fmts.map(f=>imgs[f.k]?`<div class="img-thumb-wrap"><div style="overflow:hidden;height:52px;display:flex;align-items:center;justify-content:center">${scaleSVG(imgs[f.k],90,52)}</div><div class="img-thumb-label">${f.l}</div></div>`:`<div class="img-thumb-wrap" style="height:66px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer" onclick="openImgModal(${p.day})"><div style="font-size:14px">🎨</div><div class="img-thumb-label">${f.l}</div></div>`).join('')}</div>`
+        :`<div class="img-placeholder" onclick="openImgModal(${p.day})">🎨 Generar imagen con identidad de marca</div>`}
+      </div>
+      <div class="pcf">
+        <button class="btn-sm" onclick="copyText(${p.day},'short')">📋 Copy</button>
+        <button class="btn-acc" onclick="openModal(${p.day})">Ver todo</button>
+        <button class="btn-green" onclick="openImgModal(${p.day})">${hasSome?'🖼 Imágenes':'🎨 Imagen'}</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  content.innerHTML=`
+    <div class="month-header">
+      <div><div class="month-title">${MONTHS[data.month]} ${data.year}</div><div class="month-meta">${data.company} · ${data.posts.length} publicaciones</div></div>
+      <div style="display:flex;gap:7px">
+        <button class="btn-green" onclick="generateAllImages()" id="genAllBtn">🎨 Generar todas las imágenes</button>
+        <button class="btn-sm" onclick="generateMore()">+ Más posts</button>
+        <div style="position:relative">
+          <button class="btn-sm" onclick="toggleExportMenu()" id="exportMenuBtn" style="background:rgba(253,121,168,.15);border-color:rgba(253,121,168,.4);color:#fd79a8;display:flex;align-items:center;gap:5px">
+            📤 Exportar <span style="font-size:9px">▼</span>
+          </button>
+          <div id="exportMenu" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:6px;z-index:99;min-width:220px;box-shadow:0 8px 24px rgba(0,0,0,.4);">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);padding:4px 8px 6px;font-weight:600">Elige destino</div>
+            <button onclick="exportPPTX();toggleExportMenu()" class="export-option">
+              <span style="font-size:16px">📊</span>
+              <div><div style="font-weight:600;font-size:12px">PowerPoint (.pptx)</div><div style="font-size:10px;color:var(--text3)">Descarga y edita en Office</div></div>
+            </button>
+            <button onclick="exportForGamma();toggleExportMenu()" class="export-option">
+              <span style="font-size:16px">🟣</span>
+              <div><div style="font-weight:600;font-size:12px">Gamma</div><div style="font-size:10px;color:var(--text3)">Importa el .pptx a Gamma AI</div></div>
+            </button>
+            <button onclick="exportForCanva();toggleExportMenu()" class="export-option">
+              <span style="font-size:16px">🎨</span>
+              <div><div style="font-weight:600;font-size:12px">Canva</div><div style="font-size:10px;color:var(--text3)">Sube el .pptx a Canva</div></div>
+            </button>
+            <div style="border-top:1px solid var(--border);margin:4px 0"></div>
+            <button onclick="exportText();toggleExportMenu()" class="export-option">
+              <span style="font-size:16px">📄</span>
+              <div><div style="font-weight:600;font-size:12px">Texto plano (.txt)</div><div style="font-size:10px;color:var(--text3)">Para copiar y pegar directo</div></div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    ${data.suggestions?`<div class="sug-bar"><div class="sug-icon">💡</div><div><div class="sug-title">Estrategia del mes</div><div class="sug-text">${data.suggestions}</div></div></div>`:''}
+    <div style="font-size:12px;font-weight:600;color:var(--text2)">Vista del mes</div>
+    ${cal}
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:12px;font-weight:600;color:var(--text2)">Publicaciones (${data.posts.length})</div>
+    </div>
+    <div class="posts-grid">${cards}</div>`;
+  showToast('✅ Calendario generado — '+data.posts.length+' publicaciones');
+}
+
+function scaleSVG(svg,w,h){
+  return svg.replace(/<svg/,`<svg style="width:${w}px;height:${h}px;flex-shrink:0"`);
+}
+
+// ---- IMAGE MODAL ----
+function openImgModal(day){
+  if(!calendarData)return;
+  const post=calendarData.posts.find(p=>p.day===day);
+  if(!post)return;
+  currentImgDay=day;
+  if(!imgStyles[day])imgStyles[day]='realistic';
+  document.getElementById('imgModalTitle').textContent=`🎨 ${post.weekday} ${post.day}: ${post.title.substring(0,45)}`;
+  renderImgModal();
+  document.getElementById('imgModal').style.display='flex';
+}
+
+function renderImgModal(){
+  const day=currentImgDay;
+  const post=calendarData.posts.find(p=>p.day===day);
+  const style=imgStyles[day]||'realistic';
+  const imgs=generatedImages[day]||{};
+  const fmts=[{k:'square',l:'Cuadrada 1:1',icon:'⬜',pw:150,ph:150},{k:'vertical',l:'Vertical 4:5',icon:'📱',pw:120,ph:150},{k:'banner',l:'Banner 16:9',icon:'🖥',pw:200,ph:113}];
+
+  document.getElementById('imgModalBody').innerHTML=`
+    <div style="font-size:11px;color:var(--text2);margin-bottom:6px">Estilo de imagen:</div>
+    <div class="style-toggle">
+      <button class="style-btn ${style==='realistic'?'active':''}" onclick="setImgStyle('realistic')">🏢 Realista / Corporativo</button>
+      <button class="style-btn ${style==='illustration'?'active':''}" onclick="setImgStyle('illustration')">🎨 Ilustración / Caricatura</button>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Concepto visual: ${post.image_concept||'imagen corporativa motivadora'}</div>
+    <div class="img-grid-3">
+      ${fmts.map(f=>{
+        const svg=imgs[f.k];
+        return `<div class="img-format-card ${svg?'done':''}" id="ifc-${day}-${f.k}">
+          <div class="img-preview-box" style="height:${f.ph}px">
+            ${svg?`<div style="width:100%;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:center">${scaleSVG(svg,f.pw,f.ph)}</div>`
+              :`<div style="color:var(--text3);font-size:11px;text-align:center;padding:10px">${f.icon}<br>Sin imagen</div>`}
+          </div>
+          <div class="img-format-label">${f.icon} ${f.l}</div>
+          ${svg?`<div style="display:flex;gap:5px;margin-top:6px">
+            <button class="btn-sm" style="flex:1;font-size:10px;padding:5px 6px" onclick="downloadSVG(${day},'${f.k}')">⬇ SVG</button>
+            <button class="btn-sm" style="flex:1;font-size:10px;padding:5px 6px" onclick="downloadPNG(${day},'${f.k}')">⬇ PNG</button>
+          </div>`:''}
+        </div>`;
+      }).join('')}
+    </div>
+    <button class="btn" id="genImgBtn" onclick="generateImagesForPost(${day})">🎨 Generar los 3 formatos</button>`;
+}
+
+function setImgStyle(style){
+  imgStyles[currentImgDay]=style;
+  renderImgModal();
+}
+
+async function generateImageSVG(post,format,style){
+  const c1=document.getElementById('color1Hex').value||'#6c5ce7';
+  const c2=document.getElementById('color2Hex').value||'#a29bfe';
+  const c3=document.getElementById('color3Hex').value||'#ffffff';
+  const font=document.getElementById('brandFont').value||'Inter';
+  const brandStyle=document.getElementById('brandStyle').value||document.getElementById('manualDesc').value||'moderno y profesional';
+  const company=document.getElementById('company').value||'Empresa';
+  const dims={square:{w:400,h:400},vertical:{w:320,h:400},banner:{w:480,h:270}}[format]||{w:400,h:400};
+  const styleInstr=style==='illustration'
+    ?'Estilo flat design / ilustración: formas geométricas abstractas, líneas limpias, iconografía plana, elementos decorativos como círculos, ondas, líneas y puntos que dan dinamismo visual.'
+    :'Estilo corporativo realista: composición limpia y profesional, geometría elegante, jerarquía visual clara, aspecto premium y moderno.';
+
+  const prompt=`Crea un SVG de ${dims.w}x${dims.h}px para el Muro de Humand.co de la empresa "${company}".
+
+POST:
+- Título: "${post.title}"
+- Categoría: ${post.category}
+- Concepto: ${post.image_concept||'imagen corporativa motivadora'}
+- Fecha: ${post.weekday} ${post.day}
+
+MARCA (USA EXACTAMENTE estos colores HEX):
+- Color primario: ${c1}
+- Color secundario: ${c2}
+- Color texto: ${c3}
+- Tipografía: ${font}
+- Estilo visual de la marca: ${brandStyle}
+
+DISEÑO:
+- ${styleInstr}
+- viewBox="0 0 ${dims.w} ${dims.h}"
+- Fondo con los colores de la marca (gradiente o sólido)
+- Título del post como texto principal grande y legible
+- Badge de categoría con el color secundario
+- Nombre de empresa pequeño en esquina
+- Elementos decorativos geométricos (círculos, líneas, formas) con los colores de la marca
+- Composición ${format==='banner'?'horizontal dinámica':format==='vertical'?'vertical tipo story':'cuadrada equilibrada'}
+
+Responde SOLO con el SVG completo. Sin markdown. Sin explicaciones. Empieza directamente con <svg`;
+
+  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+  const data=await res.json();
+  let svg=data.content?.map(b=>b.text||'').join('').trim().replace(/```svg|```xml|```/g,'').trim();
+  if(!svg.startsWith('<svg')){const m=svg.match(/<svg[\s\S]*<\/svg>/);svg=m?m[0]:`<svg viewBox="0 0 ${dims.w} ${dims.h}"><rect width="${dims.w}" height="${dims.h}" fill="${c1}"/><text x="${dims.w/2}" y="${dims.h/2}" fill="${c3}" text-anchor="middle" font-size="14">Error de generación</text></svg>`;}
+  return svg;
+}
+
+async function generateImagesForPost(day){
+  const post=calendarData?.posts.find(p=>p.day===day);
+  if(!post)return;
+  const style=imgStyles[day]||'realistic';
+  const btn=document.getElementById('genImgBtn');
+  if(btn){btn.disabled=true;btn.innerHTML=`<div class="spinner-sm"></div> Generando...`;}
+  if(!generatedImages[day])generatedImages[day]={};
+
+  for(const fmt of['square','vertical','banner']){
+    const card=document.getElementById(`ifc-${day}-${fmt}`);
+    if(card){card.classList.add('busy');card.querySelector('.img-preview-box').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px"><div class="spinner" style="width:20px;height:20px;border-width:2px"></div><div style="font-size:9px;color:var(--text3)">Generando...</div></div>`;}
+    try{
+      const svg=await generateImageSVG(post,fmt,style);
+      generatedImages[day][fmt]=svg;
+      if(currentImgDay===day)renderImgModal();
+    }catch(e){console.error(e);}
+  }
+  if(currentImgDay===day)renderImgModal();
+  renderCalendar();
+  showToast('✅ Imágenes generadas para el '+post.weekday+' '+day);
+}
+
+async function generateAllImages(){
+  if(!calendarData)return;
+  const btn=document.getElementById('genAllBtn');
+  btn.disabled=true;btn.innerHTML=`<div class="spinner-sm"></div> Generando...`;
+  for(const post of calendarData.posts){
+    try{
+      if(!generatedImages[post.day])generatedImages[post.day]={};
+      const style=imgStyles[post.day]||'realistic';
+      for(const fmt of['square','vertical','banner']){
+        generatedImages[post.day][fmt]=await generateImageSVG(post,fmt,style);
+      }
+      renderCalendar();
+      showToast('✅ '+post.weekday+' '+post.day+' listo');
+    }catch(e){console.error(e);}
+  }
+  btn.disabled=false;btn.innerHTML='🎨 Generar todas las imágenes';
+  showToast('🎉 ¡Todas las imágenes generadas!');
+}
+
+function downloadSVG(day,fmt){
+  const svg=generatedImages[day]?.[fmt];if(!svg)return;
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));
+  a.download=`humand-${day}-${fmt}.svg`;a.click();showToast('⬇ SVG descargado');
+}
+function downloadPNG(day,fmt){
+  const svg=generatedImages[day]?.[fmt];if(!svg)return;
+  const D={square:{w:800,h:800},vertical:{w:640,h:800},banner:{w:960,h:540}}[fmt]||{w:800,h:800};
+  const c=document.createElement('canvas');c.width=D.w;c.height=D.h;
+  const img=new Image();
+  img.onload=()=>{c.getContext('2d').drawImage(img,0,0,D.w,D.h);
+    const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=`humand-${day}-${fmt}.png`;a.click();
+    showToast('⬇ PNG descargado');};
+  img.src=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));
+}
+
+function closeImgModal(){document.getElementById('imgModal').style.display='none';}
+
+// ---- COPY MODAL ----
+function openModal(day){
+  if(!calendarData)return;
+  const p=calendarData.posts.find(x=>x.day===day);if(!p)return;
+  document.getElementById('modalTitle').textContent=`${p.weekday} ${p.day} · ${p.category}`;
+  document.getElementById('modalBody').innerHTML=`
+    <div style="font-size:14px;font-weight:700;margin-bottom:3px">${p.title}</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:12px">${p.best_time} · ${p.hashtags.join(' ')}</div>
+    <div class="copy-opt"><div class="copy-opt-label">✨ Copy principal</div><div class="copy-text" id="cp-main-${day}">${p.copy_main}</div><div class="copy-actions"><button class="btn-sm" onclick="cpTxt(${day},'main')">📋 Copiar</button></div></div>
+    <div class="copy-opt"><div class="copy-opt-label">⚡ Versión corta</div><div class="copy-text" id="cp-short-${day}">${p.copy_short}</div><div class="copy-actions"><button class="btn-sm" onclick="cpTxt(${day},'short')">📋 Copiar</button></div></div>
+    <div class="copy-opt"><div class="copy-opt-label">🏛 Versión formal</div><div class="copy-text" id="cp-formal-${day}">${p.copy_formal}</div><div class="copy-actions"><button class="btn-sm" onclick="cpTxt(${day},'formal')">📋 Copiar</button></div></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">${p.hashtags.map(h=>`<span class="chip active" style="cursor:default;font-size:10px">${h}</span>`).join('')}</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-green" style="flex:1" onclick="closeModal();openImgModal(${day})">🎨 Ver / Generar imagen</button>
+      <button class="btn" style="flex:1" onclick="regenPost(${day})">🔄 Regenerar</button>
+    </div>`;
+  document.getElementById('modal').style.display='flex';
+}
+function cpTxt(day,type){const el=document.getElementById(`cp-${type}-${day}`);if(el)navigator.clipboard.writeText(el.textContent).then(()=>showToast('✅ Copiado'));}
+function closeModal(){document.getElementById('modal').style.display='none';}
+async function regenPost(day){
+  const p=calendarData?.posts.find(x=>x.day===day);if(!p)return;
+  document.getElementById('modalBody').innerHTML=`<div class="loader" style="min-height:180px"><div class="spinner"></div><div class="loader-text">Regenerando...</div></div>`;
+  const prompt=`Genera nueva versión de post para Humand.co de "${calendarData.company}". Día: ${p.weekday} ${p.day}. Categoría: ${p.category}. Tono: ${selectedTone}.
+Responde SOLO JSON: {"title":"...","copy_main":"...","copy_short":"...","copy_formal":"...","hashtags":["#x"],"image_concept":"..."}`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();let t=d.content?.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    const m=t.match(/\{[\s\S]*\}/);if(!m)throw new Error('bad');
+    Object.assign(p,JSON.parse(m[0]));openModal(day);renderCalendar();showToast('✨ Post regenerado');
+  }catch(e){openModal(day);showToast('❌ Error al regenerar');}
+}
+
+// ---- EXTRAS ----
+async function generateMore(){
+  if(!calendarData)return;
+  showToast('🔄 Generando posts adicionales...');
+  const used=calendarData.posts.map(p=>p.day);
+  const dIM=new Date(calendarData.year,calendarData.month,0).getDate();
+  const prompt=`Genera 3 publicaciones adicionales para Humand.co de "${calendarData.company}" en ${MONTHS[calendarData.month]} ${calendarData.year}. Tono: ${selectedTone}. Categorías: ${selectedCats.join(', ')}.
+El mes tiene ${dIM} días. NO uses estos días: ${used.join(', ')}.
+Responde SOLO JSON: {"posts":[{"day":N,"weekday":"X","category":"X","title":"X","copy_main":"X","copy_short":"X","copy_formal":"X","hashtags":["#x"],"best_time":"X","image_concept":"X"}]}`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();let t=d.content?.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    const m=t.match(/\{[\s\S]*\}/);if(!m)throw new Error('bad');
+    const parsed=JSON.parse(m[0]);
+    calendarData.posts=[...calendarData.posts,...parsed.posts].sort((a,b)=>a.day-b.day);
+    renderCalendar();showToast(`✅ ${parsed.posts.length} posts agregados`);
+  }catch(e){showToast('❌ Error al generar más posts');}
+}
+function exportText(){
+  if(!calendarData)return;
+  let txt=`CALENDARIO HUMAND — ${calendarData.company}\n${MONTHS[calendarData.month]} ${calendarData.year}\n${'='.repeat(55)}\n\n${calendarData.suggestions}\n\n${'='.repeat(55)}\n\n`;
+  calendarData.posts.forEach(p=>{txt+=`📅 ${p.weekday} ${p.day} | ${p.category} | ${p.best_time}\n📌 ${p.title}\n\n${p.copy_main}\n\nCORTO: ${p.copy_short}\n\n${p.hashtags.join(' ')}\n\n${'-'.repeat(40)}\n\n`;});
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download=`humand-${calendarData.month}-${calendarData.year}.txt`;a.click();showToast('📄 Exportado');
+}
+
+async function exportPPTX(){
+  if(!calendarData)return;
+  const btn=document.getElementById('pptxBtn');
+  btn.disabled=true; btn.textContent='⏳ Generando PPTX...';
+  showToast('⏳ Creando PowerPoint...');
+  try{
+    const d=calendarData;
+    const C1=(document.getElementById('color1Hex').value||'#6c5ce7').replace('#','');
+    const C2=(document.getElementById('color2Hex').value||'#a29bfe').replace('#','');
+    const C3=(document.getElementById('color3Hex').value||'#ffffff').replace('#','');
+    const CAT={
+      'Comunicado':{bg:'00b894',txt:'ffffff'},
+      'Reconocimiento':{bg:'fdcb6e',txt:'664400'},
+      'Bienestar':{bg:'fd79a8',txt:'ffffff'},
+      'Cultura':{bg:'74b9ff',txt:'003366'},
+      'Capacitación':{bg:'a29bfe',txt:'2d2080'},
+      'Noticias':{bg:'e17055',txt:'ffffff'},
+    };
+    function cc(cat){return CAT[cat]||{bg:C1,txt:'ffffff'};}
+
+    let pres=new PptxGenJS();
+    pres.layout='LAYOUT_16x9';
+    pres.title=`Calendario Humand — ${d.company}`;
+
+    // PORTADA
+    let s=pres.addSlide();
+    s.addShape(pres.ShapeType.rect,{x:0,y:0,w:10,h:5.625,fill:{color:C1}});
+    s.addShape(pres.ShapeType.ellipse,{x:7.8,y:-1.2,w:3.5,h:3.5,fill:{color:C2},line:{color:C2}});
+    s.addShape(pres.ShapeType.ellipse,{x:-0.8,y:3.8,w:2.5,h:2.5,fill:{color:C2},line:{color:C2}});
+    s.addShape(pres.ShapeType.rect,{x:0.6,y:2.1,w:0.06,h:1.4,fill:{color:C3},line:{color:C3}});
+    s.addText('Calendario de Contenidos',{x:0.8,y:1.2,w:8,h:0.7,fontSize:13,color:C3,transparency:30,fontFace:'Trebuchet MS',charSpacing:3});
+    s.addText(d.company,{x:0.8,y:1.85,w:8.5,h:1.1,fontSize:44,color:C3,bold:true,fontFace:'Trebuchet MS'});
+    s.addText(`${MONTHS[d.month]} ${d.year}`,{x:0.8,y:2.9,w:8,h:0.7,fontSize:22,color:C3,fontFace:'Trebuchet MS',transparency:15});
+    s.addText(`${d.posts.length} publicaciones planificadas`,{x:0.8,y:4.6,w:8,h:0.4,fontSize:11,color:C3,transparency:35,fontFace:'Trebuchet MS'});
+    s.addText('Generado con Humand Content AI ✦ Claude',{x:0,y:5.3,w:10,h:0.3,fontSize:9,color:'ffffff',align:'center',transparency:50,fontFace:'Calibri'});
+
+    // ESTRATEGIA
+    if(d.suggestions){
+      let s2=pres.addSlide();
+      s2.addShape(pres.ShapeType.rect,{x:0,y:0,w:10,h:5.625,fill:{color:'F8F7FF'}});
+      s2.addShape(pres.ShapeType.rect,{x:0,y:0,w:10,h:1.1,fill:{color:C1}});
+      s2.addText('Estrategia del mes',{x:0.5,y:0.25,w:9,h:0.6,fontSize:22,color:'ffffff',bold:true,fontFace:'Trebuchet MS'});
+      const stats=[{n:d.posts.length,l:'Publicaciones'},{n:[...new Set(d.posts.map(p=>p.category))].length,l:'Categorías'},{n:Math.round(d.posts.length/4.3),l:'Posts/semana'}];
+      stats.forEach((st,i)=>{
+        const x=0.5+i*3.1;
+        s2.addShape(pres.ShapeType.rect,{x,y:1.3,w:2.8,h:1.5,fill:{color:'ffffff'},line:{color:C2,width:0.5}});
+        s2.addText(String(st.n),{x,y:1.45,w:2.8,h:0.7,fontSize:36,color:C1,bold:true,align:'center',fontFace:'Trebuchet MS'});
+        s2.addText(st.l,{x,y:2.1,w:2.8,h:0.5,fontSize:12,color:'555555',align:'center',fontFace:'Calibri'});
+      });
+      s2.addText('💡 Recomendación estratégica',{x:0.5,y:3.1,w:9,h:0.4,fontSize:12,color:C1,bold:true,fontFace:'Trebuchet MS'});
+      s2.addShape(pres.ShapeType.rect,{x:0.5,y:3.5,w:9,h:1.6,fill:{color:'ffffff'},line:{color:C2,width:0.5}});
+      s2.addText(d.suggestions,{x:0.7,y:3.6,w:8.6,h:1.4,fontSize:12,color:'333333',fontFace:'Calibri',valign:'top'});
+    }
+
+    // OVERVIEW
+    {
+      let so=pres.addSlide();
+      so.addShape(pres.ShapeType.rect,{x:0,y:0,w:10,h:5.625,fill:{color:'F8F7FF'}});
+      so.addShape(pres.ShapeType.rect,{x:0,y:0,w:10,h:0.85,fill:{color:C1}});
+      so.addText(`Vista del mes — ${MONTHS[d.month]} ${d.year}`,{x:0.5,y:0.15,w:9,h:0.55,fontSize:20,color:'ffffff',bold:true,fontFace:'Trebuchet MS'});
+      const cols=3,colW=3.0,startX=0.2,startY=1.05,rowH=0.58;
+      const maxPerCol=Math.ceil(d.posts.length/cols);
+      d.posts.forEach((p,i)=>{
+        const col=Math.floor(i/maxPerCol),row=i%maxPerCol;
+        const x=startX+col*(colW+0.2),y=startY+row*rowH;
+        if(y+rowH>5.4)return;
+        const c=cc(p.category);
+        so.addShape(pres.ShapeType.rect,{x,y,w:colW,h:rowH-0.05,fill:{color:'ffffff'},line:{color:C2,width:0.5}});
+        so.addShape(pres.ShapeType.rect,{x:x+0.04,y:y+0.06,w:0.48,h:0.38,fill:{color:C1},line:{color:C1}});
+        so.addText(String(p.day),{x:x+0.04,y:y+0.06,w:0.48,h:0.38,fontSize:13,color:'ffffff',bold:true,align:'center',valign:'middle',fontFace:'Trebuchet MS'});
+        so.addShape(pres.ShapeType.rect,{x:x+0.6,y:y+0.06,w:0.9,h:0.2,fill:{color:c.bg},line:{color:c.bg}});
+        so.addText(p.category.substring(0,12),{x:x+0.6,y:y+0.04,w:0.9,h:0.22,fontSize:7,color:c.txt,bold:true,align:'center',valign:'middle',fontFace:'Calibri'});
+        so.addText(p.title.substring(0,38),{x:x+0.6,y:y+0.27,w:colW-0.68,h:0.24,fontSize:9,color:'222222',fontFace:'Calibri',valign:'top'});
+      });
+    }
+
+    // UN SLIDE POR POST
+    d.posts.forEach((p,idx)=>{
+      const c=cc(p.category);
+      let sp=pres.addSlide();
+      sp.addShape(pres.ShapeType.rect,{x:0,y:0,w:10,h:5.625,fill:{color:'F8F7FF'}});
+      sp.addShape(pres.ShapeType.rect,{x:0,y:0,w:3.5,h:5.625,fill:{color:C1}});
+      sp.addShape(pres.ShapeType.ellipse,{x:0.3,y:3.8,w:3,h:3,fill:{color:C2},line:{color:C2},transparency:60});
+      sp.addText(String(p.day),{x:0.15,y:0.15,w:1.2,h:1.2,fontSize:52,color:'ffffff',bold:true,align:'center',fontFace:'Trebuchet MS',transparency:25});
+      sp.addText(p.weekday.toUpperCase(),{x:0.15,y:1.15,w:3.1,h:0.35,fontSize:10,color:'ffffff',align:'center',fontFace:'Calibri',charSpacing:2,transparency:30});
+      sp.addShape(pres.ShapeType.rect,{x:0.4,y:1.6,w:2.6,h:0.38,fill:{color:c.bg},line:{color:c.bg}});
+      sp.addText(p.category.toUpperCase(),{x:0.4,y:1.6,w:2.6,h:0.38,fontSize:11,color:c.txt,bold:true,align:'center',valign:'middle',fontFace:'Trebuchet MS',charSpacing:1});
+      sp.addText(`⏰ ${p.best_time}`,{x:0.4,y:2.15,w:2.6,h:0.3,fontSize:10,color:'ffffff',align:'center',transparency:25,fontFace:'Calibri'});
+      sp.addText(p.hashtags.join('  '),{x:0.15,y:4.9,w:3.1,h:0.4,fontSize:8.5,color:'ffffff',align:'center',transparency:35,fontFace:'Calibri'});
+      sp.addText(p.title,{x:3.8,y:0.3,w:5.9,h:0.95,fontSize:20,color:C1,bold:true,fontFace:'Trebuchet MS',valign:'top'});
+      sp.addShape(pres.ShapeType.rect,{x:3.8,y:1.25,w:5.8,h:0.03,fill:{color:C2},line:{color:C2}});
+      sp.addText('Copy principal',{x:3.8,y:1.35,w:5.8,h:0.3,fontSize:9,color:C1,bold:true,fontFace:'Calibri',charSpacing:1});
+      sp.addShape(pres.ShapeType.rect,{x:3.8,y:1.65,w:5.8,h:1.65,fill:{color:'ffffff'},line:{color:C2,width:0.5}});
+      sp.addText(p.copy_main.replace(/\n/g,' ').substring(0,280),{x:3.95,y:1.72,w:5.55,h:1.52,fontSize:10,color:'333333',fontFace:'Calibri',valign:'top'});
+      sp.addText('Versión corta',{x:3.8,y:3.42,w:2.7,h:0.28,fontSize:9,color:C1,bold:true,fontFace:'Calibri',charSpacing:1});
+      sp.addShape(pres.ShapeType.rect,{x:3.8,y:3.7,w:2.7,h:1.4,fill:{color:'ffffff'},line:{color:C2,width:0.5}});
+      sp.addText(p.copy_short,{x:3.95,y:3.77,w:2.5,h:1.28,fontSize:9.5,color:'333333',fontFace:'Calibri',valign:'top'});
+      sp.addText('Versión formal',{x:6.75,y:3.42,w:2.85,h:0.28,fontSize:9,color:C1,bold:true,fontFace:'Calibri',charSpacing:1});
+      sp.addShape(pres.ShapeType.rect,{x:6.75,y:3.7,w:2.85,h:1.4,fill:{color:'ffffff'},line:{color:C2,width:0.5}});
+      sp.addText(p.copy_formal.substring(0,180),{x:6.9,y:3.77,w:2.65,h:1.28,fontSize:9.5,color:'333333',fontFace:'Calibri',valign:'top'});
+      sp.addText(`${d.company}  ·  ${MONTHS[d.month]} ${d.year}  ·  ${idx+1}/${d.posts.length}`,{x:3.8,y:5.28,w:5.8,h:0.25,fontSize:8,color:'aaaaaa',align:'right',fontFace:'Calibri'});
+    });
+
+    // CIERRE
+    let sf=pres.addSlide();
+    sf.addShape(pres.ShapeType.rect,{x:0,y:0,w:10,h:5.625,fill:{color:C1}});
+    sf.addShape(pres.ShapeType.ellipse,{x:6,y:-0.5,w:5,h:5,fill:{color:C2},line:{color:C2},transparency:70});
+    sf.addShape(pres.ShapeType.ellipse,{x:-1,y:3,w:4,h:4,fill:{color:C2},line:{color:C2},transparency:70});
+    sf.addText('¡A publicar!',{x:1,y:1.5,w:8,h:1.2,fontSize:48,color:'ffffff',bold:true,align:'center',fontFace:'Trebuchet MS'});
+    sf.addText(`${d.posts.length} contenidos listos para el Muro de Humand`,{x:1,y:2.9,w:8,h:0.6,fontSize:16,color:'ffffff',align:'center',transparency:25,fontFace:'Calibri'});
+    sf.addText('Generado con Humand Content AI  ✦  Powered by Claude',{x:1,y:5.1,w:8,h:0.3,fontSize:9,color:'ffffff',align:'center',transparency:45,fontFace:'Calibri'});
+
+    await pres.writeFile({fileName:`humand-${MONTHS[d.month]}-${d.year}.pptx`});
+    showToast('✅ PowerPoint listo para descargar');
+  }catch(e){
+    showToast('❌ Error: '+e.message);
+    console.error(e);
+  }
+  if(btn){btn.disabled=false; btn.textContent='📤 Exportar ▼';}
+}
+
+
+function toggleExportMenu(){
+  const m=document.getElementById('exportMenu');
+  m.style.display=m.style.display==='none'?'flex':'none';
+  if(m.style.display==='flex')m.style.flexDirection='column';
+  // close on outside click
+  setTimeout(()=>{
+    const close=(e)=>{if(!e.target.closest('#exportMenu')&&!e.target.closest('#exportMenuBtn')){m.style.display='none';document.removeEventListener('click',close);}};
+    document.addEventListener('click',close);
+  },10);
+}
+
+function exportForGamma(){
+  // Step 1: generate the pptx, Step 2: show instructions to import to Gamma
+  exportPPTX().then(()=>{
+    setTimeout(()=>{
+      const overlay=document.createElement('div');
+      overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px';
+      overlay.innerHTML=`
+        <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+          <div style="font-size:22px;margin-bottom:8px">🟣 Importar a Gamma</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px">Tu archivo <strong style="color:var(--text)">.pptx</strong> ya se descargó. Ahora sigue estos pasos:</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px">
+            ${['Ve a <strong>gamma.app</strong> en tu navegador','Crea una cuenta gratis o inicia sesión','Haz clic en <strong>Import</strong> → <strong>Import file</strong>','Sube el archivo <strong>.pptx</strong> que descargaste','Gamma lo convierte en presentación editable con IA ✨'].map((s,i)=>`
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="min-width:24px;height:24px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;margin-top:1px">${i+1}</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.6">${s}</div>
+            </div>`).join('')}
+          </div>
+          <div style="display:flex;gap:8px">
+            <button onclick="window.open('https://gamma.app','_blank');this.closest('[style*=fixed]').remove()" style="flex:1;background:linear-gradient(135deg,#6c5ce7,#5a4fcf);color:#fff;border:none;border-radius:9px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)">Ir a Gamma →</button>
+            <button onclick="this.closest('[style*=fixed]').remove()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);border-radius:9px;padding:11px 16px;font-size:13px;cursor:pointer;font-family:var(--font)">Cerrar</button>
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+    }, 800);
+  });
+}
+
+function exportForCanva(){
+  exportPPTX().then(()=>{
+    setTimeout(()=>{
+      const overlay=document.createElement('div');
+      overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px';
+      overlay.innerHTML=`
+        <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+          <div style="font-size:22px;margin-bottom:8px">🎨 Importar a Canva</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px">Tu archivo <strong style="color:var(--text)">.pptx</strong> ya se descargó. Sigue estos pasos:</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px">
+            ${['Ve a <strong>canva.com</strong> en tu navegador','Inicia sesión en tu cuenta de Canva','En el inicio haz clic en <strong>Crear diseño</strong>','Elige <strong>Importar archivo</strong> en el menú','Sube el <strong>.pptx</strong> descargado — Canva lo convierte automáticamente 🎨','Edita colores, fuentes e imágenes con tu identidad de marca'].map((s,i)=>`
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="min-width:24px;height:24px;background:#00b894;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;margin-top:1px">${i+1}</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.6">${s}</div>
+            </div>`).join('')}
+          </div>
+          <div style="display:flex;gap:8px">
+            <button onclick="window.open('https://canva.com','_blank');this.closest('[style*=fixed]').remove()" style="flex:1;background:linear-gradient(135deg,#00b894,#009d7e);color:#fff;border:none;border-radius:9px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)">Ir a Canva →</button>
+            <button onclick="this.closest('[style*=fixed]').remove()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);border-radius:9px;padding:11px 16px;font-size:13px;cursor:pointer;font-family:var(--font)">Cerrar</button>
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+    }, 800);
+  });
+}
+
+function showToast(msg){
+  document.querySelector('.toast')?.remove();
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),3200);
+}
+</script>
+</body>
+</html>
